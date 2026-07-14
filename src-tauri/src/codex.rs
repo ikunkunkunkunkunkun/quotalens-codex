@@ -345,6 +345,8 @@ pub async fn fetch_snapshot(client: &reqwest::Client) -> ProviderSnapshot {
     let weekly_window = parse_window(find_window(
         rate_limit,
         &[
+            "primary_window",
+            "primaryWindow",
             "secondary_window",
             "secondaryWindow",
             "weekly_window",
