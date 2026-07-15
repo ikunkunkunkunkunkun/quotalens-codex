@@ -62,6 +62,7 @@ export const QuotaCard = memo(function QuotaCard({
   const language = normalizeLanguage(preferences.language);
   const t = copy[language];
   const primary = snapshot.weeklyWindow ? clampPercent(snapshot.weeklyWindow.remainingPercent) : null;
+  const meterStyle = primary !== null ? { "--quota-angle": `${primary * 3.6}deg` } as React.CSSProperties : undefined;
   const staleAge = Date.now() - new Date(snapshot.updatedAt).getTime();
   const staleExpired = snapshot.status === "stale" && staleAge > 30 * 60_000;
   const available = snapshot.status === "ok" || (snapshot.status === "stale" && !staleExpired);
@@ -89,6 +90,8 @@ export const QuotaCard = memo(function QuotaCard({
       onMouseDown={(event) => { if (event.button === 0) void onDrag(); }}
     >
       <div className="aurora" aria-hidden="true" />
+      <div className="kinetic-grid" aria-hidden="true" />
+      <div className="spark-field" aria-hidden="true" />
       <span className="sr-only" aria-live="polite">{available && primary !== null ? t.availableLabel(primary) : message}</span>
       {notice ? <p className="operation-notice" role="status">{notice}</p> : null}
       <header className="card-header">
@@ -111,12 +114,17 @@ export const QuotaCard = memo(function QuotaCard({
 
       {available && primary !== null ? (
         <>
-          <section className="primary-metric" aria-label={t.availableLabel(primary)}>
-            <span>{primary}</span><small>%</small>
+          <section className="meter-cluster" style={meterStyle} aria-label={t.availableLabel(primary)}>
+            <div className="meter-ring" aria-hidden="true" />
+            <div className="meter-core">
+              <div className="primary-metric">
+                <span>{primary}</span><small>%</small>
+              </div>
+              <p className="metric-caption">{t.shortRemaining}</p>
+            </div>
           </section>
-          <p className="metric-caption">{t.shortRemaining}</p>
           <div className="progress" role="progressbar" aria-label={t.availableLabel(primary)} aria-valuemin={0} aria-valuemax={100} aria-valuenow={primary}>
-            <span style={{ width: `${primary}%` }} />
+            <span style={{ width: `${primary}%`, height: `${primary}%` }} />
           </div>
           <section className="quota-details">
             <div className="detail-card">
